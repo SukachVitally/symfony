@@ -1,4 +1,4 @@
 .idea
-vendor/*
-app/cache/*
-app/logs/*
+db.sqlite3
+*.lock
+.vagrant
