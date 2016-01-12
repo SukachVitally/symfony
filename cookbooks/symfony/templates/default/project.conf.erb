@@ -1,0 +1,17 @@
+server {
+    server_name project.local;
+
+    access_log <%= @logs_dir %>access.log;
+    error_log <%= @logs_dir %>error.log;
+    root <%= @project_dir %>;
+    location / {
+        index index.html index.htm index.php;
+    }
+
+	location ~ .php$ {
+        include /etc/nginx/fastcgi_params;
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME <%= @project_dir %>$fastcgi_script_name;
+    }
+}
