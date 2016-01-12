@@ -10,12 +10,10 @@ package 'git'
 
 execute 'autostart nginx' do
   command "chkconfig nginx on"
-  action :run
 end
 
 execute 'autostart php-fpm' do
   command "chkconfig php-fpm on"
-  action :run
 end
 
 ##########################################
@@ -38,3 +36,15 @@ template "/etc/nginx/conf.d/project.conf" do
     )
 end
 
+
+##########################################
+########### Symfony install ##############
+##########################################
+
+execute 'Download symfony library' do
+  command "curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony"
+end
+
+execute 'Set symfony lib as executed' do
+  command "chmod a+x /usr/local/bin/symfony"
+end
