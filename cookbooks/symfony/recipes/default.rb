@@ -36,6 +36,10 @@ template "/etc/nginx/conf.d/project.conf" do
     )
 end
 
+template "/etc/php.ini" do
+    source 'php.ini.erb'
+end
+
 
 ##########################################
 ########### Symfony install ##############
