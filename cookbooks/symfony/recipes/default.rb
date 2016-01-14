@@ -1,10 +1,19 @@
 include_recipe 'build-essential::default'
 
-package 'php'
 package 'epel-release'
+
+rpm_package 'webtatic-release' do
+  source  'https://mirror.webtatic.com/yum/el7/webtatic-release.rpm'
+  action :upgrade
+end
+
+package 'php56w'
+package 'php56w-common'
+package 'php56w-opcache'
+package 'php56w-fpm'
+package 'php56w-xml'
+package 'php56w-pdo'
 package 'nginx'
-package 'php-fpm'
-package 'php-common'
 package 'vim'
 package 'git'
 
