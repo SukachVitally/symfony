@@ -16,6 +16,7 @@ package 'php56w-pdo'
 package 'nginx'
 package 'vim'
 package 'git'
+package 'mc'
 
 execute 'autostart nginx' do
   command "chkconfig nginx on"
@@ -30,8 +31,13 @@ project_dir = node[:project_dir]
 logs_dir = node[:logs_dir]
 dev_owner = node[:dev_owner]
 
-directory "#{logs_dir}" do
+directory logs_dir do
     owner dev_owner
+    mode '0777'
+    action :create
+end
+
+directory node[:var_dir] do
     mode '0777'
     action :create
 end
