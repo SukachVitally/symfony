@@ -1,20 +1,59 @@
 server {
+    listen 80;
+    listen 443 ssl;
     server_name project.local;
-    access_log <%= @logs_dir %>access.log;
-    error_log <%= @logs_dir %>error.log;
     root <%= @project_dir %>;
 
+    index index.html index.htm index.php app.php;
+
+    charset utf-8;
 
     location / {
-        # try to serve file directly, fallback to app.php
-        try_files $uri /app.php$is_args$args;
+        try_files $uri $uri/ /app.php?$query_string;
     }
 
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    access_log off;
+    error_log  <%= @logs_dir %>error.log error;
+
+    sendfile off;
+
+    client_max_body_size 100m;
+
+    # DEV
     location ~ ^/(app_dev|config)\.php(/|$) {
-        fastcgi_pass  127.0.0.1:9000;
         fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        #fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_pass  127.0.0.1:9000;
         include fastcgi_params;
-        fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
-        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors off;
+        fastcgi_buffer_size 16k;
+        fastcgi_buffers 4 16k;
     }
+
+    # PROD
+    location ~ ^/app\.php(/|$) {
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        #fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_pass  127.0.0.1:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors off;
+        fastcgi_buffer_size 16k;
+        fastcgi_buffers 4 16k;
+        # Prevents URIs that include the front controller. This will 404:
+        # http://domain.tld/app.php/some-path
+        # Remove the internal directive to allow URIs like this
+        internal;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    #ssl_certificate     /etc/nginx/ssl/discover.dev.crt;
+    #ssl_certificate_key /etc/nginx/ssl/discover.dev.key;
 }
